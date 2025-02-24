@@ -1,0 +1,108 @@
+#WA
+SetEnvIfNoCase User-Agent .*archive.* bad_bot
+
+#UniversalRules
+SetEnvIfNoCase User-Agent ^$ bad_bot #leave this for blank user-agents
+SetEnvIfNoCase User-Agent .*http.* bad_bot
+SetEnvIfNoCase User-Agent .*\(compatible.* bad_bot
+SetEnvIfNoCase User-Agent .*\@.* bad_bot
+SetEnvIfNoCase User-Agent .*bot.* bad_bot
+
+#Goodbots
+SetEnvIfNoCase User-Agent .*google.* !bad_bot
+SetEnvIfNoCase User-Agent .*yandex.* !bad_bot
+SetEnvIfNoCase User-Agent .*mail.* !bad_bot #mail.ru
+SetEnvIfNoCase User-Agent .*yahoo.* !bad_bot #yahoo
+#SetEnvIfNoCase User-Agent .*bingbot.* !bad_bot #bing
+SetEnvIfNoCase User-Agent .*DuckDuckBot.* !bad_bot #duckduckgo
+SetEnvIfNoCase User-Agent .*Baiduspider.* !bad_bot #Baidu
+SetEnvIfNoCase User-Agent .*facebook.* !bad_bot #facebbok
+
+#Patches
+SetEnvIfNoCase User-Agent .*MSIE.* !bad_bot #MSIE
+SetEnvIfNoCase User-Agent .*QtWeb.* !bad_bot #Qtweb browser
+SetEnvIfNoCase User-Agent .*ABrowse.* !bad_bot #Abrowser browser
+SetEnvIfNoCase User-Agent .*AmigaVoyager.* !bad_bot #Abrowser browser
+SetEnvIfNoCase User-Agent .*UCBrowser.* !bad_bot #UCBrowser
+
+SetEnvIfNoCase User-Agent .*gecko.* !bad_bot #gecko engine
+SetEnvIfNoCase User-Agent .*webkit.* !bad_bot #webkit engine
+SetEnvIfNoCase User-Agent .*KHTML.* !bad_bot #KHTML engine
+SetEnvIfNoCase User-Agent .*Dalvik.* !bad_bot #Android native
+SetEnvIfNoCase User-Agent .*Presto.* !bad_bot #Opera mini
+SetEnvIfNoCase User-Agent .*MIDP.* !bad_bot #Blackberry
+
+SetEnvIfNoCase User-Agent .*AppEngine.* !bad_bot #Google App Engine
+
+<Limit GET POST HEAD>
+Order Allow,Deny
+Allow from all
+Deny from env=bad_bot
+</Limit>
+
+#Only if directory index.php is present
+#DirectoryIndex index.html
+
+#AddDefaultCharset WINDOWS-1251
+
+# Protect replaces.txt
+<Files ./replaces-text.txt>
+Order Allow,Deny
+Deny from all
+</Files>
+
+<Files ./replaces-ereg.txt>
+Order Allow,Deny
+Deny from all
+</Files>
+
+<Files ./cfg.php>
+Order Allow,Deny
+Deny from all
+</Files>
+
+RewriteEngine on
+#https to http
+RewriteCond %{HTTPS} on
+RewriteRule (.*) http://%{HTTP_HOST}%{REQUEST_URI} [R=301,L]
+
+#http to https
+#RewriteCond %{HTTPS} off
+#RewriteRule (.*) https://%{HTTP_HOST}%{REQUEST_URI} [R=301,L]
+
+#RewriteCond %{SERVER_PORT} !^443$
+#RewriteRule .* https://%{SERVER_NAME}%{REQUEST_URI} [R=301,L]
+
+#???? ??????????? ?????????????
+#1
+#RewriteCond %{HTTPS} off
+#RewriteCond %{HTTP:X-Forwarded-Proto} !https
+#RewriteRule ^(.*)$ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
+
+#2
+#RewriteCond %{ENV:HTTPS} !on 
+#RewriteRule ^(.*)$ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
+
+
+#nonWWW-toWWW
+#RewriteCond %{HTTP_HOST} !^www\. [NC]
+#RewriteRule ^(.*)$ http://www.%{HTTP_HOST}/$1 [R=301,L]
+
+#WWW-tononWWW
+RewriteCond %{HTTP_HOST} ^www\.(.*)$ [NC]
+RewriteRule ^(.*)$ http://%1/$1 [R=301,L]
+
+#
+RewriteBase /
+RewriteRule ^route\.php$ - [L]
+RewriteCond %{REQUEST_URI} !(\.png|\.PNG|\.jpg|\.JPG|\.gif|\.GIF|\.jpeg|\.bmp|\.svg|.\SVG)$
+RewriteCond %{REQUEST_URI} !(\.ttf)$
+RewriteCond %{REQUEST_URI} !(\.js)$
+RewriteCond %{REQUEST_URI} !(\.ico)$
+RewriteCond %{REQUEST_URI} !(\.css)$
+RewriteCond %{REQUEST_URI} !(\.woff)
+RewriteCond %{REQUEST_URI} !(\.xls)$
+RewriteCond %{REQUEST_URI} !(\.txt)$
+RewriteCond %{REQUEST_URI} !(\.map)$
+RewriteCond %{REQUEST_URI} !(\.pdf)$
+RewriteRule (.*) /route.php [L]
