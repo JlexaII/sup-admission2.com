@@ -1,5 +1,0 @@
-User-agent: *
-Sitemap: https://www.sup-admission.com/sitemap.xml
-
-#Disallow: /*.css$
-#Disallow: /*.js$
